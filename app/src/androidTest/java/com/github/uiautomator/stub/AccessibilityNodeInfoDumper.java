@@ -203,27 +203,36 @@ class AccessibilityNodeInfoDumper {
     }
 
     private static String stripInvalidXMLChars(CharSequence cs) {
-        StringBuilder ret = new StringBuilder();
-        char ch;
-        for (int i = 0; i < cs.length(); i++) {
-            ch = cs.charAt(i);
-            // code below from Html#withinStyle, this is a temporary workaround because XML
-            // serializer does not support surrogates
-            if (ch >= 0xD800 && ch <= 0xDFFF) {
-                if (ch < 0xDC00 && i + 1 < cs.length()) {
-                    char d = cs.charAt(i + 1);
-                    if (d >= 0xDC00 && d <= 0xDFFF) {
-                        i++;
-                        ret.append("?");
-                    }
-                }
-            } else if (ch > 0x7E || ch < ' ') {
-                ret.append("?");
-            } else {
-                ret.append(ch);
-            }
-        }
-        return ret.toString();
+        // ref: https://stackoverflow.com/questions/4237625/removing-invalid-xml-characters-from-a-string-in-java
+        String xml10pattern = "[^"
+                + "\u0009\r\n"
+                + "\u0020-\uD7FF"
+                + "\uE000-\uFFFD"
+                + "\ud800\udc00-\udbff\udfff"
+                + "]";
+
+        return cs.toString().replaceAll(xml10pattern, "?");
+//        StringBuilder ret = new StringBuilder();
+//        char ch;
+//        for (int i = 0; i < cs.length(); i++) {
+//            ch = cs.charAt(i);
+//            // code below from Html#withinStyle, this is a temporary workaround because XML
+//            // serializer does not support surrogates
+//            if (ch >= 0xD800 && ch <= 0xDFFF) {
+//                if (ch < 0xDC00 && i + 1 < cs.length()) {
+//                    char d = cs.charAt(i + 1);
+//                    if (d >= 0xDC00 && d <= 0xDFFF) {
+//                        i++;
+//                        ret.append("?");
+//                    }
+//                }
+//            } else if (ch > 0x7E || ch < ' ') {
+//                ret.append("?");
+//            } else {
+//                ret.append(ch);
+//            }
+//        }
+//        return ret.toString();
     }
 
     static android.graphics.Rect getVisibleBoundsInScreen(AccessibilityNodeInfo node, int width, int height) {
