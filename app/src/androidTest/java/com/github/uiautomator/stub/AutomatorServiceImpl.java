@@ -82,7 +82,10 @@ public class AutomatorServiceImpl implements AutomatorService {
 
         // default uiAutomation serviceInfo.eventTypes is -1
         // I guess this might be watch all eventTypes
-        uiAutomation.setOnAccessibilityEventListener(new AccessibilityEventListener(device, watchers));
+
+        // Disable it also disable toast catcher
+        // Just to make sure if the following code make global worse or better.
+        // uiAutomation.setOnAccessibilityEventListener(new AccessibilityEventListener(device, watchers));
     }
 
     /**
